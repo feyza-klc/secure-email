@@ -1,0 +1,145 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Page background */
+body {
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Two-column layout container */
+.auth-container {
+  width: min(980px, 100%);
+  height: min(620px, 100%);
+  display: flex;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Left image panel */
+.auth-image {
+  flex: 1;
+  background:
+    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+    url("../images/auth.png") center / cover no-repeat;
+  color: #fff;
+  padding: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+
+
+/* Right form panel (card) */
+.card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Title */
+h2 {
+  text-align: center;
+  margin-bottom: 22px;
+  color: #764ba2;
+  font-weight: 650;
+}
+
+/* Form spacing */
+form { margin-top: 6px; }
+.link { margin-top: 14px; text-align: center; }
+
+/* Labels */
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #9355d2;
+  margin-bottom: 6px;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 12px 14px;
+  margin: 0 0 16px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e0;
+  font-size: 14px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.28);
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+}
+
+/* Links */
+p {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 13px;
+}
+
+a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Small screens: hide image, keep form full width */
+@media (max-width: 820px) {
+  .auth-container {
+    height: auto;
+    flex-direction: column;
+  }
+
+  .auth-image {
+    min-height: 220px;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+  }
+
+  .auth-image p {
+    max-width: 60ch;
+  }
+}
