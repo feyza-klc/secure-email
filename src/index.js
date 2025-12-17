@@ -1,8 +1,13 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
+const connectDB = require("./config/db");
 
 const app = express();
 const PORT = 3000;
+
+// MongoDB bağlantısı
+connectDB();
 
 // Serve static HTML/CSS
 app.use(express.static(path.join(__dirname, "..", "public")));
