@@ -9,21 +9,23 @@
      <div class="auth-container">
         <div class="auth-image">
         </div>
-  <div class="card">
-    <h2>Login</h2>
 
-    <form>
-      <label>Username</label><br>
-      <input type="text"><br><br>
+        <div class="card">
+            <h2>Login</h2>
 
-      <label>Password</label><br>
-      <input type="password"><br><br>
+            <!-- Backend'e bağlanan form -->
+            <form action="/api/auth/login" method="POST">
+              <label>Username</label><br>
+              <input type="text" name="username" required><br><br>
 
-      <button type="submit">Login</button>
-    </form>
+              <label>Password</label><br>
+              <input type="password" name="password" required><br><br>
 
-    <p class="link"><a href="register.html">Go to Register</a></p>
-  </div>
+              <button type="submit">Login</button>
+            </form>
+
+            <p class="link"><a href="register.html">Go to Register</a></p>
+        </div>
   </div>
 </body>
 </html>
