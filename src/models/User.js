@@ -13,6 +13,15 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  publicKey:{
+    type: String,
+    default: ""
+  },
+  privateKey:{
+    type: String,
+    default: "",
+    select:false
   }
 });
 

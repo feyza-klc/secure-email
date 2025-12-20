@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Secure-Mail | Home</title>
+  <link rel="stylesheet" href="/css/home.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div>
+        <h1 class="brand">Secure-Mail</h1>
+        <p class="muted">Encrypted • Signed • Verified</p>
+      </div>
+
+      <div class="topbar-right">
+        <div class="userpill">
+          <span class="muted">Logged in as</span>
+          <strong id="usernameLabel">Unknown</strong>
+        </div>
+        <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <!-- Compose -->
+      <section class="card">
+        <h2>Compose Message</h2>
+        <p class="muted">Encrypt message with AES, encrypt AES key with recipient public key, sign hash with your private key.</p>
+
+        <form id="composeForm" class="form">
+          <label>
+            Recipient username
+            <input type="text" id="recipient" placeholder="e.g. zeynep" required />
+          </label>
+
+          <label>
+            Message
+            <textarea id="message" rows="6" placeholder="Write your secure message..." required></textarea>
+          </label>
+
+          <div class="row">
+            <button class="btn" type="submit">Send Secure Message</button>
+            <button class="btn btn-secondary" type="button" id="clearBtn">Clear</button>
+          </div>
+
+          <div id="composeStatus" class="status"></div>
+        </form>
+      </section>
+
+      <!-- Inbox -->
+      <section class="card">
+        <div class="card-head">
+          <h2>Inbox</h2>
+          <button class="btn btn-secondary" id="refreshInboxBtn" type="button">Refresh</button>
+        </div>
+
+        <ul id="inboxList" class="list">
+          <li class="muted">No messages loaded yet.</li>
+        </ul>
+      </section>
+
+      <!-- Sent -->
+      <section class="card">
+        <div class="card-head">
+          <h2>Sent</h2>
+          <button class="btn btn-secondary" id="refreshSentBtn" type="button">Refresh</button>
+        </div>
+
+        <ul id="sentList" class="list">
+          <li class="muted">No messages loaded yet.</li>
+        </ul>
+      </section>
+
+      <!-- Verification Panel -->
+      <section class="card">
+        <h2>Verification</h2>
+        <p class="muted">
+          When you open a message, the app will decrypt the AES key using your private key,
+          decrypt the content, then verify integrity (hash) and authenticity (signature).
+        </p>
+
+        <div class="kv">
+          <div class="kv-row"><span class="muted">Confidentiality</span><span class="badge">AES + RSA</span></div>
+          <div class="kv-row"><span class="muted">Integrity</span><span class="badge">SHA-256</span></div>
+          <div class="kv-row"><span class="muted">Authentication</span><span class="badge">Digital Signature</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // --- Minimal session handling ---
+    // After login, store something like:
+    // localStorage.setItem("user", JSON.stringify({ id, username, publicKey }));
+
+    const usernameLabel = document.getElementById("usernameLabel");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const params = new URLSearchParams(window.location.search);
+    const u = params.get("u");
+
+    if(!u){
+      window.location.href ="/login.html";
+    }else{
+      usernameLabel.textContent=u;
+    }
+   
+
+    logoutBtn.addEventListener("click", () => {
+      window.location.href = "/login.html";
+    });
+
+    // --- Compose (UI only for now) ---
+    const composeForm = document.getElementById("composeForm");
+    const composeStatus = document.getElementById("composeStatus");
+    const clearBtn = document.getElementById("clearBtn");
+
+    clearBtn.addEventListener("click", () => {
+      document.getElementById("recipient").value = "";
+      document.getElementById("message").value = "";
+      composeStatus.textContent = "";
+      composeStatus.className = "status";
+    });
+
+    composeForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      composeStatus.textContent = "";
+      composeStatus.className = "status";
+
+      const recipient = document.getElementById("recipient").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!recipient || !message) {
+        composeStatus.textContent = "Recipient and message are required.";
+        composeStatus.classList.add("status-error");
+        return;
+      }
+
+      // TODO: Connect to backend endpoint e.g. POST /messages/send
+      // For now we show a demo message.
+      composeStatus.textContent = "Message prepared. (Backend send endpoint not connected yet.)";
+      composeStatus.classList.add("status-ok");
+    });
+
+    // --- Inbox / Sent placeholders ---
+    const inboxList = document.getElementById("inboxList");
+    const sentList = document.getElementById("sentList");
+
+    document.getElementById("refreshInboxBtn").addEventListener("click", async () => {
+      inboxList.innerHTML = '<li class="muted">Inbox endpoint not connected yet.</li>';
+    });
+
+    document.getElementById("refreshSentBtn").addEventListener("click", async () => {
+      sentList.innerHTML = '<li class="muted">Sent endpoint not connected yet.</li>';
+    });
+  </script>
+</body>
+</html>
