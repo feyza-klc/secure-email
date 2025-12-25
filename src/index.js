@@ -3,6 +3,7 @@ const express = require("express");
 const path = require("path");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
+const messageRoutes = require("./routes/messages"); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,11 +14,14 @@ connectDB();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Serve static files from /public
+// Serve static files
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 // Auth routes
 app.use("/api/auth", authRoutes);
+
+// Message routes
+app.use("/api/messages", messageRoutes); // <-- YENİ EKLENEN: Mesaj API'sini aktif ettik
 
 // Default route
 app.get("/", (req, res) => {

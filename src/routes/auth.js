@@ -23,7 +23,7 @@ function alertAndRedirect(res, message, path) {
   );
 }
 
-// ================= REGISTER =================
+//  REGISTER 
 router.post("/register", async (req, res) => {
   console.log("--> REGISTER request. Body:", req.body);
 
@@ -78,7 +78,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ================= LOGIN =================
+//  LOGIN 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   console.log("--> LOGIN request:", username);

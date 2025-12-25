@@ -3,21 +3,39 @@ const mongoose = require("mongoose");
 const MessageSchema = new mongoose.Schema({
   sender: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    required: true
   },
   recipient: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    required: true
   },
 
-  encryptedMessage: String,     // AES ile şifrelenmiş mesaj
-  encryptedSymmetricKey: String,// RSA ile şifrelenmiş AES key
+  encryptedMessage: {
+    type: String,
+    required: true
+  },
 
-  messageHash: String,          // SHA-256 hash
-  digitalSignature: String,     // Sender private key ile atılmış imza
+  encryptedSymmetricKey: {
+    type: String,
+    required: true
+  },
+
+  messageHash: {
+    type: String,
+    required: true
+  },
+
+  digitalSignature: {
+    type: String,
+    required: true
+  },
 
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
+
+module.exports = mongoose.model("Message", MessageSchema);

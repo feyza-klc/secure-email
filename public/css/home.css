@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
 :root {
   --bg: #0b0714;            /* very dark purple */
   --card: #16112a;          /* card background */
@@ -16,7 +19,8 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  
+  font-family: 'Inter', sans-serif; 
 
   /* Purple / violet glow background */
   background:
@@ -105,6 +109,7 @@ input, textarea {
   background: rgba(0,0,0,0.35);
   color: var(--text);
   outline: none;
+  font-family: 'Inter', sans-serif;
 }
 
 textarea { resize: vertical; }
@@ -129,6 +134,10 @@ textarea:focus {
   color: white;
   cursor: pointer;
   font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px; 
 }
 
 .btn-secondary {
@@ -181,4 +190,130 @@ textarea:focus {
   border-radius: 12px;
   padding: 10px 12px;
   margin-bottom: 10px;
+}
+
+
+.msg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.msg-sender {
+  font-weight: bold;
+  color: var(--ok);
+}
+
+.msg-date {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+
+.msg-body p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: -0.5px;
+  opacity: 0.7;
+  word-break: break-all;
+}
+
+
+.decrypted-box {
+  margin-top: 12px;
+  padding: 16px;
+  background: linear-gradient(145deg, rgba(109, 255, 179, 0.1), rgba(109, 255, 179, 0.02));
+  border-left: 4px solid #6dffb3;
+  border-radius: 4px 12px 12px 4px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  color: #fff;
+  font-size: 16px;
+  animation: fadeIn 0.5s ease;
+}
+
+
+.decrypted-box::before {
+  content: "🔓 Decrypted Content:";
+  display: block;
+  font-size: 11px;
+  color: #6dffb3;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+  font-family: 'Inter', sans-serif;
+}
+
+.signature-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.sig-valid {
+  background: rgba(109, 255, 179, 0.2);
+  color: #6dffb3;
+  border: 1px solid #6dffb3;
+}
+
+.sig-invalid {
+  background: rgba(255, 107, 138, 0.2);
+  color: #ff6b8a;
+  border: 1px solid #ff6b8a;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+.toast-success {
+  background: rgba(109, 255, 179, 0.15);
+  border: 1px solid #6dffb3;
+  color: #6dffb3;
+  padding: 10px 16px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  animation: slideIn 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+
+.decrypted-box {
+  margin-top: 12px;
+  padding: 16px;
+  background: linear-gradient(145deg, rgba(109, 255, 179, 0.1), rgba(109, 255, 179, 0.02));
+  border-left: 4px solid #6dffb3; 
+  border-radius: 4px 12px 12px 4px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  color: #fff;
+  font-size: 16px; 
+}
+
+
+.decrypted-box::before {
+  content: "🔓 Decrypted Content:";
+  display: block;
+  font-size: 11px;
+  color: #6dffb3;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
 }

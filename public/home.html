@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Secure-Mail | Home</title>
   <link rel="stylesheet" href="/css/home.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <div class="container">
@@ -17,14 +18,13 @@
       <div class="topbar-right">
         <div class="userpill">
           <span class="muted">Logged in as</span>
-          <strong id="usernameLabel">Unknown</strong>
+          <strong id="usernameLabel">...</strong>
         </div>
         <button class="btn btn-secondary" id="logoutBtn">Logout</button>
       </div>
     </header>
 
     <main class="grid">
-      <!-- Compose -->
       <section class="card">
         <h2>Compose Message</h2>
         <p class="muted">Encrypt message with AES, encrypt AES key with recipient public key, sign hash with your private key.</p>
@@ -32,7 +32,7 @@
         <form id="composeForm" class="form">
           <label>
             Recipient username
-            <input type="text" id="recipient" placeholder="e.g. zeynep" required />
+            <input type="text" id="recipient" placeholder="e.g. emine" required />
           </label>
 
           <label>
@@ -41,7 +41,9 @@
           </label>
 
           <div class="row">
-            <button class="btn" type="submit">Send Secure Message</button>
+            <button class="btn" type="submit">
+              <i class="fa-solid fa-paper-plane"></i> Send Secure Message
+            </button>
             <button class="btn btn-secondary" type="button" id="clearBtn">Clear</button>
           </div>
 
@@ -49,70 +51,55 @@
         </form>
       </section>
 
-      <!-- Inbox -->
       <section class="card">
         <div class="card-head">
           <h2>Inbox</h2>
-          <button class="btn btn-secondary" id="refreshInboxBtn" type="button">Refresh</button>
+          <button class="btn btn-secondary" id="refreshInboxBtn" type="button">
+            <i class="fa-solid fa-rotate"></i> Refresh
+          </button>
         </div>
 
         <ul id="inboxList" class="list">
-          <li class="muted">No messages loaded yet.</li>
+          <li class="muted">Loading messages...</li>
         </ul>
       </section>
 
-      <!-- Sent -->
       <section class="card">
-        <div class="card-head">
-          <h2>Sent</h2>
-          <button class="btn btn-secondary" id="refreshSentBtn" type="button">Refresh</button>
-        </div>
-
-        <ul id="sentList" class="list">
-          <li class="muted">No messages loaded yet.</li>
-        </ul>
-      </section>
-
-      <!-- Verification Panel -->
-      <section class="card">
-        <h2>Verification</h2>
+        <h2>Verification Process</h2>
         <p class="muted">
-          When you open a message, the app will decrypt the AES key using your private key,
-          decrypt the content, then verify integrity (hash) and authenticity (signature).
+          When you click "Decrypt", the system performs these operations in real-time:
         </p>
 
         <div class="kv">
-          <div class="kv-row"><span class="muted">Confidentiality</span><span class="badge">AES + RSA</span></div>
-          <div class="kv-row"><span class="muted">Integrity</span><span class="badge">SHA-256</span></div>
-          <div class="kv-row"><span class="muted">Authentication</span><span class="badge">Digital Signature</span></div>
+          <div class="kv-row"><span class="muted">1. Decrypt Key</span><span class="badge">RSA Private Key</span></div>
+          <div class="kv-row"><span class="muted">2. Decrypt Content</span><span class="badge">AES-256</span></div>
+          <div class="kv-row"><span class="muted">3. Verify Integrity</span><span class="badge">SHA-256 Hash</span></div>
+          <div class="kv-row"><span class="muted">4. Authenticate</span><span class="badge">Verify Digital Signature</span></div>
         </div>
       </section>
     </main>
   </div>
 
   <script>
-    // --- Minimal session handling ---
-    // After login, store something like:
-    // localStorage.setItem("user", JSON.stringify({ id, username, publicKey }));
-
+    // Login Check & Logout
     const usernameLabel = document.getElementById("usernameLabel");
     const logoutBtn = document.getElementById("logoutBtn");
 
     const params = new URLSearchParams(window.location.search);
-    const u = params.get("u");
+    const currentUser = params.get("u");
 
-    if(!u){
-      window.location.href ="/login.html";
-    }else{
-      usernameLabel.textContent=u;
+    if (!currentUser) {
+      alert("No user logged in! Redirecting...");
+      window.location.href = "/login.html";
+    } else {
+      usernameLabel.textContent = currentUser;
     }
-   
 
     logoutBtn.addEventListener("click", () => {
       window.location.href = "/login.html";
     });
 
-    // --- Compose (UI only for now) ---
+    // Sending Messages
     const composeForm = document.getElementById("composeForm");
     const composeStatus = document.getElementById("composeStatus");
     const clearBtn = document.getElementById("clearBtn");
@@ -120,41 +107,157 @@
     clearBtn.addEventListener("click", () => {
       document.getElementById("recipient").value = "";
       document.getElementById("message").value = "";
-      composeStatus.textContent = "";
-      composeStatus.className = "status";
+      composeStatus.innerHTML = ""; 
     });
 
     composeForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      composeStatus.textContent = "";
+      composeStatus.innerHTML = "Encrypting and sending..."; 
       composeStatus.className = "status";
 
       const recipient = document.getElementById("recipient").value.trim();
-      const message = document.getElementById("message").value.trim();
+      const content = document.getElementById("message").value.trim();
 
-      if (!recipient || !message) {
-        composeStatus.textContent = "Recipient and message are required.";
-        composeStatus.classList.add("status-error");
-        return;
+      try {
+        const res = await fetch("/api/messages/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            senderUsername: currentUser,
+            recipientUsername: recipient,
+            content: content
+          })
+        });
+
+        // TOAST NOTIFICATION
+        if (res.ok) {
+          
+          composeStatus.innerHTML = `
+            <div class="toast-success">
+              ✅ Message Sent Successfully!
+            </div>
+          `;
+          
+          
+          document.getElementById("message").value = "";
+
+          
+          setTimeout(() => {
+            composeStatus.innerHTML = "";
+          }, 3000);
+
+        } else {
+          
+          const text = await res.text();
+          composeStatus.innerHTML = `<span class="status-error">❌ Error: ${text}</span>`;
+        }
+        // -------------------------------------------
+
+      } catch (err) {
+        console.error(err);
+        composeStatus.innerHTML = `<span class="status-error">❌ Network Error</span>`;
       }
-
-      // TODO: Connect to backend endpoint e.g. POST /messages/send
-      // For now we show a demo message.
-      composeStatus.textContent = "Message prepared. (Backend send endpoint not connected yet.)";
-      composeStatus.classList.add("status-ok");
     });
 
-    // --- Inbox / Sent placeholders ---
+    // Inbox
     const inboxList = document.getElementById("inboxList");
-    const sentList = document.getElementById("sentList");
+    const refreshInboxBtn = document.getElementById("refreshInboxBtn");
 
-    document.getElementById("refreshInboxBtn").addEventListener("click", async () => {
-      inboxList.innerHTML = '<li class="muted">Inbox endpoint not connected yet.</li>';
-    });
+    async function loadInbox() {
+      inboxList.innerHTML = '<li class="muted">Loading...</li>';
+      try {
+        const res = await fetch(`/api/messages/inbox?username=${currentUser}`);
+        const messages = await res.json();
 
-    document.getElementById("refreshSentBtn").addEventListener("click", async () => {
-      sentList.innerHTML = '<li class="muted">Sent endpoint not connected yet.</li>';
-    });
+        if (messages.length === 0) {
+          inboxList.innerHTML = '<li class="muted">No messages found.</li>';
+          return;
+        }
+
+        inboxList.innerHTML = ""; 
+
+        messages.forEach(msg => {
+          const li = document.createElement("li");
+          const date = new Date(msg.createdAt).toLocaleString();
+          
+          li.innerHTML = `
+            <div class="msg-header">
+              <span class="msg-sender">From: ${msg.sender ? msg.sender.username : "Unknown"}</span>
+              <span class="msg-date">${date}</span>
+            </div>
+            <div class="msg-body">
+              <p class="muted" style="font-size:12px; word-break:break-all;">
+                🔒 Encrypted: ${msg.encryptedMessage.substring(0, 30)}...
+              </p>
+              
+              <button class="btn btn-secondary" onclick="decryptMessage('${msg._id}', this)">
+                <i class="fa-solid fa-key"></i> Decrypt & Read
+              </button>
+
+            </div>
+            <div class="decrypted-container" id="decrypted-${msg._id}"></div>
+          `;
+          inboxList.appendChild(li);
+        });
+
+      } catch (err) {
+        console.error(err);
+        inboxList.innerHTML = '<li class="muted status-error">Failed to load inbox.</li>';
+      }
+    }
+
+    // DECRYPT
+    window.decryptMessage = async (messageId, btnElement) => {
+      const container = document.getElementById(`decrypted-${messageId}`);
+      
+      
+      btnElement.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Decrypting...`;
+      btnElement.disabled = true;
+
+      try {
+        const res = await fetch("/api/messages/decrypt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messageId: messageId,
+            username: currentUser
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          const sigClass = data.isSignatureValid ? "sig-valid" : "sig-invalid";
+          const sigIcon = data.isSignatureValid ? "✅" : "❌";
+          const sigText = data.isSignatureValid ? "Signature Verified (Authentic)" : "Signature INVALID!";
+
+          container.innerHTML = `
+            <div class="decrypted-box">
+              <p style="margin:0; font-size:15px; color:#fff;">${data.content}</p>
+              <div class="signature-badge ${sigClass}">
+                ${sigIcon} ${sigText}
+              </div>
+            </div>
+          `;
+          
+          
+          btnElement.innerHTML = `<i class="fa-solid fa-lock-open"></i> Decrypted`;
+        } else {
+          btnElement.textContent = "Retry";
+          btnElement.disabled = false;
+          alert("Decryption Failed: " + (data.error || "Unknown error"));
+        }
+      } catch (err) {
+        console.error(err);
+        btnElement.textContent = "Error";
+        btnElement.disabled = false;
+        alert("Network error during decryption.");
+      }
+    };
+
+    refreshInboxBtn.addEventListener("click", loadInbox);
+    loadInbox();
+
   </script>
 </body>
 </html>
