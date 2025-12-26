@@ -31,3 +31,10 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+process.on("uncaughtException", (err) => {
+  console.error("🔥 uncaughtException:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("🔥 unhandledRejection:", reason);
+});

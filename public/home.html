@@ -117,6 +117,12 @@
 
       const recipient = document.getElementById("recipient").value.trim();
       const content = document.getElementById("message").value.trim();
+  
+      const senderPassword = prompt("Enter your password to sign the message:");
+      if (!senderPassword) {
+        composeStatus.innerHTML = `<span class="status-error">❌ Sending cancelled (password required).</span>`;
+        return;
+      }
 
       try {
         const res = await fetch("/api/messages/send", {
@@ -124,6 +130,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             senderUsername: currentUser,
+            senderPassword: senderPassword,
             recipientUsername: recipient,
             content: content
           })
@@ -210,7 +217,9 @@
     window.decryptMessage = async (messageId, btnElement) => {
       const container = document.getElementById(`decrypted-${messageId}`);
       
-      
+      const password = prompt("Enter your password to decrypt:");
+      if (!password) return;
+
       btnElement.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Decrypting...`;
       btnElement.disabled = true;
 
@@ -220,7 +229,8 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messageId: messageId,
-            username: currentUser
+            username: currentUser,
+            password: password
           })
         });
 
@@ -231,29 +241,39 @@
           const sigIcon = data.isSignatureValid ? "✅" : "❌";
           const sigText = data.isSignatureValid ? "Signature Verified (Authentic)" : "Signature INVALID!";
 
+          const intClass = data.isIntegrityIntact ? "sig-valid" : "sig-invalid";
+          const intIcon = data.isIntegrityIntact ? "✅" : "❌";
+          const intText = data.isIntegrityIntact ? "Integrity OK" : "Integrity FAILED!";
+
+
           container.innerHTML = `
-            <div class="decrypted-box">
-              <p style="margin:0; font-size:15px; color:#fff;">${data.content}</p>
-              <div class="signature-badge ${sigClass}">
-                ${sigIcon} ${sigText}
-              </div>
-            </div>
-          `;
+        <div class="decrypted-box">
+          <p style="margin:0; font-size:15px; color:#fff;">${data.content}</p>
+
+          <div class="signature-badge ${sigClass}">
+            ${sigIcon} ${sigText}
+          </div>
+
+          <div class="signature-badge ${intClass}">
+            ${intIcon} ${intText}
+          </div>
+        </div>
+      `;
           
           
           btnElement.innerHTML = `<i class="fa-solid fa-lock-open"></i> Decrypted`;
-        } else {
-          btnElement.textContent = "Retry";
-          btnElement.disabled = false;
-          alert("Decryption Failed: " + (data.error || "Unknown error"));
-        }
-      } catch (err) {
-        console.error(err);
-        btnElement.textContent = "Error";
-        btnElement.disabled = false;
-        alert("Network error during decryption.");
-      }
-    };
+    } else {
+      btnElement.innerHTML = `<i class="fa-solid fa-key"></i> Decrypt & Read`;
+      btnElement.disabled = false;
+      alert("Decryption Failed: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error(err);
+    btnElement.innerHTML = `<i class="fa-solid fa-key"></i> Decrypt & Read`;
+    btnElement.disabled = false;
+    alert("Network error during decryption.");
+  }
+};
 
     refreshInboxBtn.addEventListener("click", loadInbox);
     loadInbox();
